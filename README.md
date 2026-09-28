@@ -46,3 +46,7 @@ Building the ARES interface and hardware foundation on an ESP32, including a 128
 - IR Remote:
 ```Number keys for number input```
 ```Ok button for enter```
+
+---
+
+# **Version: v0.1**

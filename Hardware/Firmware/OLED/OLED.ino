@@ -5,6 +5,7 @@
 #include <IRremoteESP8266.h>
 #include <IRrecv.h>
 #include <IRutils.h>
+#include <IRsend.h>
 
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
@@ -19,11 +20,15 @@
 
 #define IR_PIN 35
 
+#define IR_LED 23
+
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 IRrecv irrecv(IR_PIN);
 decode_results results;
+
+IRsend irsend(IR_LED);
 
 const unsigned char startup_logo [] PROGMEM = {
   0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -496,6 +501,11 @@ void setup() {
 
   irrecv.enableIRIn();
 
+  pinMode(IR_LED, OUTPUT);
+  irsend.begin();
+
+  Serial.println("IR Transmitter Test");
+
   display.clearDisplay();
 
   // Startup
@@ -516,7 +526,7 @@ void loop() {
   Touchpin_Input_Read();
 
   if (irrecv.decode(&results)) {
-
+    Serial.println(resultToHumanReadableBasic(&results));
     if (strcmp(current_screen, "selected_wifi") == 0) {
 
       char number = IR_Number(results.value);
@@ -538,5 +548,8 @@ void loop() {
     irrecv.resume();
   }
 
+  irsend.sendNEC(0xFFA25D, 32);
+
+  Serial.println("Sent: 0xFFA25D");
 
 }
